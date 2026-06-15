@@ -1,3 +1,5 @@
+import { TiTick } from "react-icons/ti";
+
 export default function TrustSection() {
   const features = [
     "Verified construction workers",
@@ -22,7 +24,7 @@ export default function TrustSection() {
 
           <p className="max-w-2xl text-base leading-relaxed text-slate-700 sm:text-lg">
             A single platform where construction hiring, property promotion,
-            and equipment discovery feel safer, faster, and more reliable.
+            and equipment discovery feel safer, faster and more reliable.
           </p>
 
           <div className="flex flex-col gap-1">
@@ -31,7 +33,7 @@ export default function TrustSection() {
                 key={item}
                 className="flex items-start gap-3 rounded-2xl bg-white/90 px-4 py-3 backdrop-blur-sm"
               >
-                <span>✔️</span>
+                <span className="text-2xl"><TiTick /></span>
                 <span className="text-sm font-medium text-slate-800 sm:text-[15px]">
                   {item}
                 </span>
