@@ -21,7 +21,7 @@ export default function NavigationBar() {
 
         <a
           href="/register"
-          className="border-2 border-green-500 text-green-500 px-4 py-2 rounded hover:bg-green-500 hover:text-white transition"
+          className="border-2 border-green-500 text-green-500 bg-white px-4 py-2 rounded hover:bg-green-500 hover:text-white transition"
         >
           Get started
         </a>
@@ -44,7 +44,7 @@ export default function NavigationBar() {
 
           <a
             href="/register"
-            className="border-2 border-green-500 text-green-500 px-4 py-2 rounded"
+            className="border-2 border-green-500 text-green-500 px-4 py-2 rounded bg-white"
             onClick={() => setOpen(false)}
           >
             Get started
