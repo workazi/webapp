@@ -8,7 +8,7 @@ export default function CTASection() {
             Download the app or register online and start using Workazi today.
           </h2>
           <p className="max-w-2xl text-sm leading-relaxed text-slate-700 sm:text-base">
-            Join the marketplace built for construction jobs, workers, property listings, equipment, and hardware businesses.
+            Join the marketplace built for construction jobs, workers, property listings, equipment and hardware businesses.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-1">
@@ -28,7 +28,7 @@ export default function CTASection() {
         </div>
 
         <div className="lg:flex-1">
-          <div className="mx-auto max-w-xl overflow-hidden rounded-3xl border border-white/60 bg-white/40 p-3 shadow-xl backdrop-blur-sm sm:p-4">
+          <div className="mx-auto max-w-xl overflow-hidden rounded-3xl p-3 backdrop-blur-sm sm:p-4">
             <img
               src="/assets/cta.png"
               alt="Workazi call to action"
