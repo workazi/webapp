@@ -15,7 +15,7 @@ export default function NavigationBar() {
       <div className="hidden md:flex gap-6 items-center">
         <ul className="flex gap-6 items-center">
           <li><a href="/#home" className="hover:text-green-500 font-bold text-gray-500">Home</a></li>
-          <li><a href="#about" className="hover:text-green-500 font-bold text-gray-500">About</a></li>
+          <li><a href="/about" className="hover:text-green-500 font-bold text-gray-500">About</a></li>
           <li><a href="/contact" className="hover:text-green-500 font-bold text-gray-500">Contact</a></li>
         </ul>
 

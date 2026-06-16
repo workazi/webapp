@@ -27,11 +27,11 @@ export default function TrustSection() {
             and equipment discovery feel safer, faster and more reliable.
           </p>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col ">
             {features.map((item) => (
               <div
                 key={item}
-                className="flex items-start gap-3 rounded-2xl bg-white/90 px-4 py-3 backdrop-blur-sm"
+                className="flex items-start gap-3 rounded-2xl bg-white/90 px-4 py-2 backdrop-blur-sm"
               >
                 <span className="text-2xl"><TiTick /></span>
                 <span className="text-sm font-medium text-slate-800 sm:text-[15px]">
@@ -44,7 +44,7 @@ export default function TrustSection() {
 
         {/* Image */}
         <div className="lg:w-5/12 flex">
-          <div className="h-72 sm:h-96 lg:h-[600px] overflow-hidden rounded-4xl s">
+          <div className="h-72 sm:h-96 lg:h-[590px] overflow-hidden rounded-4xl s">
             <img
               src="/assets/app_screenshot.png"
               alt="App screenshot"
