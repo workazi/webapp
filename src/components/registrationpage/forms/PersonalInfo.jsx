@@ -10,8 +10,6 @@ export default function PersonalInfo() {
     fullname: Yup.string()
       .min(3, 'Name must be at least 3 characters')
       .required('Full name is required'),
-    id: Yup.string()
-      .required('ID/National ID is required'),
     phone_number: Yup.string()
       .matches(/^[0-9]+$/, 'Must be only digits')
       .min(10, 'Must be at least 10 digits')
@@ -45,7 +43,6 @@ export default function PersonalInfo() {
     <Formik
       initialValues={{
         fullname: '',
-        id: '',
         phone_number: '',
         email: '',
         password: '',
@@ -62,7 +59,6 @@ export default function PersonalInfo() {
             </div>
             <Form className="form-container">
               <TextInput name="fullname" type="text" placeholder="Full name" label="Full Name" />
-              <TextInput name="id" type="text" placeholder="ID Number" label="National ID" />
               <div className='grid grid-cols-2 gap-8 py-2'>
                   <TextInput name="phone_number" type="tel" placeholder="Phone Number" label="Phone Number" />
                   <TextInput name="email" type="email" placeholder="Email Address" label="Email" />
