@@ -1,9 +1,9 @@
 import React from 'react'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import TextInput from '../../inputs/TextInput'
 
-export default function PersonalInfo() {
+export default function PersonalInfo({handleNextFunc}) {
   
 
   const validationSchema = Yup.object({
@@ -34,6 +34,7 @@ export default function PersonalInfo() {
     // Simulate API Call
     setTimeout(() => {
       alert('Registration successful!')
+      handleNextFunc()
       setSubmitting(false)
       resetForm()
     }, 1000)
@@ -54,8 +55,11 @@ export default function PersonalInfo() {
     >
       {({ isSubmitting, errors, touched }) => (
         <div>
-            <div className='p-4 py-8'>
-              <h1 className='font-bold text-3xl border-b-2 p-2 border-green-500'>Sign up</h1>
+            <div className='grid gap-2 max-w-2xl pt-4'>
+              <h1 className='text-3xl font-bold tracking-tight text-gray-900'>Hello 👋 </h1>
+              <p className='text-gray-500 leading-relaxed'>
+                Please keep your login credentials safe, as you will need them to access your account. For your security, remember to change your password the first time you log in.
+              </p>
             </div>
             <Form className="form-container">
               <TextInput name="fullname" type="text" placeholder="Full name" label="Full Name" />
@@ -66,15 +70,15 @@ export default function PersonalInfo() {
               
               
               <TextInput name="password" type="password" placeholder="Password" label="Password" />
-              <TextInput name="confirmPassword" type="password" placeholder="Re-enter password" label="Confirm Password" />
+              <TextInput name="confirm_password" type="password" placeholder="Re-enter password" label="Confirm Password" />
               <div style={{ margin: '15px 0' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Field type="checkbox" name="privacyAgreement" />
-                  <span>I accept the privacy <a href='https://workazi.ke/privacy-policy-1' className='text-blue-500 hover:text-blue-500/80' target='_blank'>agreement</a></span>
+                  <Field type="checkbox" name="privacy_agreement" />
+                  <span>I accept the privacy <a href='https://workazi.ke/privacy-policy-2' className='text-blue-500 hover:text-blue-500/80' target='_blank'>agreement</a></span>
                 </label>
-                {errors.privacyAgreement && touched.privacyAgreement && (
+                {errors.privacy_agreement && touched.privacy_agreement && (
                   <div style={{ color: 'red', fontSize: '0.8rem', marginTop: '4px' }}>
-                    {errors.privacyAgreement}
+                    {errors.privacy_agreement}
                   </div>
                 )}
               </div>

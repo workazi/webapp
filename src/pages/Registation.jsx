@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import PersonalInfo from '../components/registrationpage/forms/PersonalInfo'
 import ActivationPayment from '../components/registrationpage/forms/ActivationPayment'
 import ProfileUpdate from '../components/registrationpage/forms/ProfileUpdate'
@@ -9,13 +9,12 @@ import Preferences from '../components/registrationpage/forms/Preferences'
 
 const STEPS = [
   { id: 1, title: 'Personal Info', component: PersonalInfo },
-  { id: 2, title: 'Payment', component: ActivationPayment },
+  { id: 2, title: 'Account activation', component: ActivationPayment },
   { id: 3, title: 'Profile Layout', component: ProfileUpdate },
   { id: 4, title: 'Education', component: EducationDetails },
   { id: 5, title: 'Skills', component: EmployeeSkills },
   { id: 6, title: 'Package', component: PackageSelection },
-  { id: 7, title: 'Preferences', component: Preferences }, 
-  
+  { id: 7, title: 'Preferences', component: Preferences },   
  
 ]
 
@@ -39,9 +38,9 @@ export default function Registration() {
   const ActiveComponent = STEPS[currentStep].component
 
   return (
-    <div className='bg-gradient-to-r from-green-50 via-lime-50 to-white min-h-screen flex flex-col'>
+    <div className='bg-linear-to-r from-green-50 via-lime-50 to-white min-h-screen flex flex-col'>
       {/* 1. NAVIGATION BAR */}
-      <nav className='px-8 py-4 bg-white/50 backdrop-blur-sm border-b border-gray-100 shrink-0'>
+      <nav className='px-8 py-4 backdrop-blur-sm border-b border-gray-100 shrink-0'>
         <p className='font-bold text-2xl tracking-tight text-gray-800'>
           work<span className='text-green-500'>azi</span>
         </p>
@@ -111,32 +110,9 @@ export default function Registration() {
         <div className='bg-white p-8 w-full max-w-2xl shadow-xl rounded-2xl border border-gray-100 flex flex-col justify-between min-h-[450px]'>
           
           {/* Render Active Form Component */}
-          <div className='mb-8'>
-            <ActiveComponent />
+          <div className=' sm:h-140 overflow-auto'>
+            <ActiveComponent handleNextFunc={handleNext} handleBackFunc={handleBack} />
           </div>
-
-          {/* Action Footer */}
-          <div className='flex justify-between items-center pt-4 border-t border-gray-100 shrink-0 mt-auto'>
-            <button
-              onClick={handleBack}
-              disabled={currentStep === 0}
-              className={`px-5 py-2 rounded-lg font-medium transition-colors ${
-                currentStep === 0
-                  ? 'text-gray-300 cursor-not-allowed'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-              }`}
-            >
-              Back
-            </button>
-
-            <button
-              onClick={handleNext}
-              className='px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors shadow-sm'
-            >
-              {currentStep === STEPS.length - 1 ? 'Submit & Finish' : 'Next'}
-            </button>
-          </div>
-
         </div>
       </div>
     </div>
