@@ -3,28 +3,26 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import TextInput from '../../inputs/TextInput'
 
-// Validation Schema using Yup
 const validationSchema = Yup.object().shape({
-  phoneNumber: Yup.string()
+  phone_number: Yup.string()
     .required('Phone number is required')
     .matches(/^(?:254|\+254|0)?(7|1)\d{8}$/, 'Enter a valid Kenyan phone number'),
   payment_method: Yup.string().required('Please select a payment method'),
 })
 
-export default function ActivationPayment() {
+export default function ActivationPayment({handleNextFunc}) {
   const initialValues = {
-    phoneNumber: '',
-    payment_method: 'safaricom', // Default selection
+    phone_number: '',
+    payment_method: 'safaricom',
   }
 
   const handleInitiatePayment = (values) => {
     console.log('Initiating STK Push with:', values)
-    // Handle STK Push / API trigger logic here
   }
 
   const handleVerifyPayment = (values) => {
-    console.log('Checking payment status for:', values.phoneNumber)
-    // Handle transaction status verification logic here
+    handleNextFunc()
+    console.log('Checking payment status for:', values.phone_number)
   }
 
   return (
@@ -41,14 +39,13 @@ export default function ActivationPayment() {
         >
             {({ values, errors, touched }) => (
                 <Form className='mt-4 space-y-4'>
-                    {/* Phone Number Input */}
                     <div>
                         <TextInput 
-                            name='phoneNumber' 
+                            name='phone_number' 
                             placeholder='e.g., 0712345678' 
                         />
-                        {errors.phoneNumber && touched.phoneNumber && (
-                            <div className="text-red-500 text-sm mt-1">{errors.phoneNumber}</div>
+                        {errors.phone_number && touched.phone_number && (
+                            <div className="text-red-500 text-sm mt-1">{errors.phone_number}</div>
                         )}
                     </div>
 
@@ -87,7 +84,6 @@ export default function ActivationPayment() {
                         </button>
                     </div>
 
-                    {/* Conditional Safaricom Paybill Instructions */}
                     {values.payment_method === 'safaricom' && (
                         <div className='mt-6 p-4 bg-gray-50 rounded-lg'>
                             <h3 className='font-bold text-gray-800 text-lg mb-2'>Manual M-PESA Instructions</h3>
@@ -104,7 +100,6 @@ export default function ActivationPayment() {
                         </div>
                     )}
 
-                    {/* Conditional Airtel Money Paybill Instructions */}
                     {values.payment_method === 'airtel' && (
                         <div className='mt-6 p-4 bg-gray-50 rounded-lg'>
                             <h3 className='font-bold text-gray-800 text-lg mb-2'>Manual Airtel Money Instructions</h3>

@@ -4,8 +4,6 @@ import * as Yup from 'yup'
 import TextInput from '../../inputs/TextInput'
 import FileInput from '../../inputs/FileInput'
 
-// Validation Schema using Yup
-// Note: File validation checks if the value exists. For real File objects, you can use .test() for size/type checks if needed.
 const validationSchema = Yup.object().shape({
   id_number: Yup.string()
     .required('National ID is required')
@@ -18,8 +16,7 @@ const validationSchema = Yup.object().shape({
 })
 
 export default function ProfileUpdate() {
-  // Mock data structure mimicking endpoint response
-  // Replace this with your actual API fetch state logic
+
   const [countiesData, setCountiesData] = useState([
     { id: 'nairobi', name: 'Nairobi', subCounties: ['Westlands', 'Kasarani', 'Kibra', 'Dagoretti'] },
     { id: 'mombasa', name: 'Mombasa', subCounties: ['Nyali', 'Changamwe', 'Kisauni', 'Likoni'] },
@@ -37,7 +34,6 @@ export default function ProfileUpdate() {
 
   const handleSubmit = (values) => {
     console.log('Submitting profile updates:', values)
-    // Handle submission logic (Remember to use FormData if sending files to your backend)
   }
 
   return (
@@ -52,8 +48,7 @@ export default function ProfileUpdate() {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
         >
-            {({ values, setFieldValue, errors, touched }) => {
-                // Dynamically find available sub-counties based on current county selection
+            {({ values, setFieldValue}) => {
                 const selectedCountyData = countiesData.find(c => c.id === values.county)
                 const availableSubCounties = selectedCountyData ? selectedCountyData.subCounties : []
 
@@ -62,9 +57,7 @@ export default function ProfileUpdate() {
                         {/* National ID */}
                         <div>
                             <TextInput name='id_number' placeholder='National ID' label='National ID' />
-                            {errors.id_number && touched.id_number && (
-                                <div className="text-red-500 text-sm mt-1">{errors.id_number}</div>
-                            )}
+            
                         </div>
 
                         {/* ID File Uploads */}
@@ -90,9 +83,9 @@ export default function ProfileUpdate() {
                             </div>
                         </div>
 
-                        {/* Location Selectors (County & Subcounty) */}
+                        
                         <div className='grid grid-cols-2 gap-8'>
-                            {/* County Select */}
+                            
                             <div className='flex flex-col gap-1'>
                                 <label htmlFor='county' className='font-bold text-sm text-gray-600'>County</label>
                                 <Field
@@ -115,7 +108,7 @@ export default function ProfileUpdate() {
                                 <ErrorMessage name="county" component="div" className="text-red-500 text-sm" />
                             </div>
 
-                            {/* Sub-County Select */}
+                           
                             <div className='flex flex-col gap-1'>
                                 <label htmlFor='sub_county' className='font-bold text-sm text-gray-600'>Sub-County</label>
                                 <Field
@@ -135,7 +128,7 @@ export default function ProfileUpdate() {
                             </div>
                         </div>
 
-                        {/* Optional Area Field */}
+                        
                         <div>
                             <TextInput 
                                 name='area' 
@@ -144,7 +137,7 @@ export default function ProfileUpdate() {
                             />
                         </div>
 
-                        {/* Submit Button */}
+                      
                         <div className='pt-4'>
                             <button 
                                 type='submit' 

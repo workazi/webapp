@@ -1,12 +1,10 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 
-// 1. Question Configuration System
-// This lets you easily add, change, or rearrange questions and selection types.
 const PREFERENCE_QUESTIONS = [
   {
     id: 'notificationMethods',
-    type: 'multiple', // Allows checking multiple options
+    type: 'multiple', 
     question: 'When a new job matches your skills, how would you like to be notified?',
     options: [
       { label: 'WhatsApp Message', value: 'whatsapp' },
@@ -17,7 +15,7 @@ const PREFERENCE_QUESTIONS = [
   },
   {
     id: 'automaticApply',
-    type: 'single', // Force exactly one choice
+    type: 'single',
     question: 'Would you like us to apply automatically a job that matches your skills?',
     options: [
       { label: 'Yes', value: true },
@@ -28,7 +26,7 @@ const PREFERENCE_QUESTIONS = [
 ];
 
 export default function Preferences() {
-  // 2. Generate initial values dynamically based on the question types
+  
   const initialValues = PREFERENCE_QUESTIONS.reduce((acc, q) => {
     acc[q.id] = q.type === 'multiple' ? [] : ''; // Arrays for checkboxes, strings for radios
     return acc;
@@ -36,13 +34,12 @@ export default function Preferences() {
 
   const handleSubmit = (values) => {
     console.log('User Preferences Submitted:', values);
-    // If you pass down a handleNext prop from your stepper page, call it here:
-    // props.onNext()
+
   };
 
   return (
     <div className='grid gap-8'>
-      {/* Header Section */}
+      
       <div className='grid gap-2'>
         <h1 className='text-3xl font-bold tracking-tight text-gray-900'>We are almost there 🎉</h1>
         <p className='text-gray-500 leading-relaxed'>
@@ -51,7 +48,7 @@ export default function Preferences() {
         </p>
       </div>
 
-      {/* Formik Integration */}
+      
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
@@ -66,11 +63,10 @@ export default function Preferences() {
 
                 <div className='grid gap-3'>
                   {q.options.map((option) => {
-                    // Decide formik input attributes on the fly
+                    
                     const isMultiple = q.type === 'multiple';
                     const inputType = isMultiple ? 'checkbox' : 'radio';
                     
-                    // Simple styling checker to highlight checked components
                     const isChecked = isMultiple 
                       ? values[q.id]?.includes(option.value)
                       : values[q.id] === option.value;
@@ -99,9 +95,6 @@ export default function Preferences() {
                 </div>
               </div>
             ))}
-
-            {/* Note: In your stepper architecture, your primary 'Next' button sits on the parent layer. 
-                If you ever want a standalone submission fallback right inside this form, you can place it here. */}
           </Form>
         )}
       </Formik>

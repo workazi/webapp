@@ -1,17 +1,21 @@
 import { axiosInstance } from "./axios";
 
-export function accountCreation({data}){
-    axiosInstance.post('/auth/signup/',data)
-    .then(
-        function (res){
-            console.log(res.data)
-            return res.data
-        }
-    )
-    .catch(
-        function (error){
-            console.log(error.response.data)
-            return error.response.data
-        }
-    )
+
+export async function accountCreation(data) {
+  try {
+  
+    const res = await axiosInstance.post("/auth/signup/", data);
+    
+    return {
+      success: true,
+      status: res.status,
+      data: res.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      status: error.response?.status || 500,
+      data: error.response?.data || { message: error.message }
+    };
+  }
 }
