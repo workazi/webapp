@@ -5,9 +5,10 @@ import NavigationBar from '../components/homepage/NavigationBar'
 import Footer from '../components/homepage/Footer'
 import { FaEnvelope, FaHeadset, FaClock } from 'react-icons/fa6'
 import { IoIosCloudUpload } from 'react-icons/io'
-
-// FIXED: Adjust this relative path if your TextInput component folder sits somewhere else
 import TextInput from '../components/inputs/TextInput' 
+
+// Import your network utility function
+import { supportRequest } from '../api/support'
 
 export default function Contact() {
   
@@ -20,13 +21,41 @@ export default function Contact() {
     screenshot: yup.mixed().nullable()
   })
 
-  const handleSubmit = (values, { setSubmitting, resetForm }) => {
-    console.log('Submitted Contact Data:', values)
+  const handleSubmit = async (values, { setSubmitting, setStatus, resetForm }) => {
+    // Clear any existing alert status strings before running a request
+    setStatus(null);
+
+    let payload = values;
+
+    // If a file upload is included, wrap everything into a FormData instance
+    if (values.screenshot) {
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('email', values.email);
+      formData.append('inquiry_type', values.inquiry_type);
+      formData.append('subject', values.subject);
+      formData.append('message', values.message);
+      formData.append('screenshot', values.screenshot);
+      payload = formData;
+    }
+
+    const response = await supportRequest(payload);
+
+    if (response.success) {
+      setStatus({ success: 'Your message has been sent successfully! We will get back to you soon.' });
+      resetForm();
+    } else {
+      // Pull specific backend error messages if available, else fall back to a standard string
+      const errorMessage = response.data?.message || 'Failed to send your request. Please try again later.';
+      setStatus({ error: errorMessage });
+    }
+
+    setSubmitting(false);
+
+    // Auto-clear success or error message after 10 seconds (10000ms)
     setTimeout(() => {
-      alert('Your request has been sent successfully!')
-      resetForm()
-      setSubmitting(false)
-    }, 1200)
+      setStatus(null);
+    }, 10000);
   }
 
   return (
@@ -64,8 +93,21 @@ export default function Contact() {
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
             >
-              {({ values, setFieldValue, handleChange, handleBlur, isSubmitting }) => (
+              {({ values, setFieldValue, handleChange, handleBlur, isSubmitting, status }) => (
                 <Form className="flex flex-col gap-4 text-left">
+                  
+                  {/* Global Success / Error Alerts placeholders */}
+                  {status?.success && (
+                    <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700 font-medium transition-all duration-300 animate-fade-in">
+                      {status.success}
+                    </div>
+                  )}
+
+                  {status?.error && (
+                    <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 font-medium transition-all duration-300 animate-fade-in">
+                      {status.error}
+                    </div>
+                  )}
                   
                   {/* Name & Email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -156,11 +198,10 @@ export default function Contact() {
                     <ErrorMessage name="message" component="span" className="text-xs text-red-500 pl-1 font-medium" />
                   </div>
 
-                  {/* FIXED: Formatted, closed submit button string */}
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full mt-2 py-3 px-4 font-bold text-white bg-green-500 hover:bg-green-600 disabled:bg-slate-200 rounded-xl transition-all shadow-md shadow-green-500/10 cursor-pointer text-center"
+                    className="w-full mt-2 py-3 px-4 font-bold text-white bg-green-500 hover:bg-green-600 disabled:bg-slate-200 rounded-xl transition-all shadow-md shadow-green-500/10 cursor-pointer text-center disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? 'Sending Request...' : 'Send Message'}
                   </button>
@@ -172,7 +213,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Right Hand Side: Visual Contact Info Cards */}
+        {/* Right Hand Side: Contact Info */}
         <div className="space-y-6 lg:w-5/12 text-left">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg">
             <h2 className="text-xl font-bold text-slate-900">Email contacts</h2>

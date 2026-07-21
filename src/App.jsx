@@ -6,6 +6,7 @@ import {
  } from "react-router-dom"
 import { Suspense, lazy } from "react"
 import Registation from "./pages/Registation"
+import WorkaziLegal from "./pages/WorkaziLegal"
 
 const HomePage = lazy(() => import("./pages/HomePage"))
 const Contact = lazy(()=>import( "./pages/Contact") )
@@ -18,6 +19,7 @@ const router = createBrowserRouter(
       <Route path="/contact" element={<Contact />}/>
       <Route path="/about" element={<About />} />
       <Route path="/register" element={<Registation />} />
+      <Route path="/privacy-policy-2" element={<WorkaziLegal />} />
     </Route>
   )
 )

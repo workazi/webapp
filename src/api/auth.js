@@ -19,3 +19,22 @@ export async function accountCreation(data) {
     };
   }
 }
+
+export async function oneOffPayment(data){
+  try{
+    const res = await axiosInstance.post('/payment/initiate', data)
+
+    return {
+      success: true,
+      status: res.status,
+      data: res.data,
+    }
+  } catch(err){
+    return {
+      success:false,
+      status: err.response?.status || 500,
+      data: err.response?.data || { message: err.message }
+    }
+  }
+  
+}

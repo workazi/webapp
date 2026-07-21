@@ -19,7 +19,7 @@ const STEPS = [
 ]
 
 export default function Registration() {
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(1)
 
   const handleNext = () => {
     if (currentStep < STEPS.length - 1) {

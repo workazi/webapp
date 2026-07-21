@@ -92,7 +92,6 @@ export default function PersonalInfo({ handleNextFunc }) {
               </p>
             </div>
 
-            {/* Top Notification Banner */}
             {formStatus.message && (
               <div className={`my-4 p-3 rounded-lg text-sm font-medium ${
                 formStatus.type === 'success' 

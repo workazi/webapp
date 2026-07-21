@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import TextInput from '../../inputs/TextInput'
+import { oneOffPayment } from '../../../api/auth'
 
 const validationSchema = Yup.object().shape({
   phone_number: Yup.string()
@@ -10,19 +11,84 @@ const validationSchema = Yup.object().shape({
   payment_method: Yup.string().required('Please select a payment method'),
 })
 
-export default function ActivationPayment({handleNextFunc}) {
+const getSavedBillingInfo = () => {
+  try {
+    const savedSession = sessionStorage.getItem('_wz_b_session');
+    if (savedSession) {
+      return JSON.parse(atob(savedSession));
+    }
+  } catch (e) {
+    console.error("Error reading session memory: ", e);
+  }
+  return null;
+}
+
+export default function ActivationPayment({ handleNextFunc }) {
+  const [paymentStatus, setPaymentStatus] = useState({ type: '', message: '' });
+  const billingInfo = getSavedBillingInfo();
+
   const initialValues = {
     phone_number: '',
     payment_method: 'safaricom',
   }
 
-  const handleInitiatePayment = (values) => {
-    console.log('Initiating STK Push with:', values)
+  const handleInitiatePayment = async (values, { setSubmitting }) => {
+    setSubmitting(true);
+    setPaymentStatus({ type: '', message: '' });
+
+    if (!billingInfo?.userId) {
+      setPaymentStatus({ 
+        type: 'error', 
+        message: 'Please reload or sign up again.' 
+      });
+      setSubmitting(false);
+      return;
+    }
+
+    const payload = {
+      user_id: billingInfo.userId,
+      phone_number: values.phone_number,
+      payment_method: values.payment_method,
+      amount: 35 // Base activation fee
+    };
+
+    const response = await oneOffPayment(payload);
+
+    if (response.success) {
+      const transactionId = response.data?.transaction_id || '';
+      
+      if (billingInfo) {
+        const updatedSession = { ...billingInfo, transactionId };
+        sessionStorage.setItem('_wz_b_session', btoa(JSON.stringify(updatedSession)));
+      }
+
+      setPaymentStatus({ 
+        type: 'success', 
+        message: `${response.data?.detail || 'Payment initiated successfully!'}. Check your phone for the push prompt.` 
+      });
+    } else {
+      const serverDetail = response.data?.detail || '';
+      let errorDisplay = 'Could not initiate connection. Please try again.';
+
+      if (serverDetail.includes('Unsupported payment provider')) {
+        errorDisplay = 'Payment method selected is currently unsupported by our provider.';
+      } else if (serverDetail.includes('required')) {
+        errorDisplay = 'Please verify payment method fields are filled.';
+      } else if (serverDetail) {
+        errorDisplay = serverDetail;
+      }
+
+      setPaymentStatus({ type: 'error', message: errorDisplay });
+    }
+    setSubmitting(false);
   }
 
   const handleVerifyPayment = (values) => {
-    handleNextFunc()
     console.log('Checking payment status for:', values.phone_number)
+
+    const completeBillingContext = getSavedBillingInfo();
+    
+    handleNextFunc(completeBillingContext);
   }
 
   return (
@@ -32,24 +98,30 @@ export default function ActivationPayment({handleNextFunc}) {
             <p className='text-gray-500 py-1'>One off fee of KES 35 for account activation</p>
         </div>
 
+        {paymentStatus.message && (
+          <div className={`my-4 p-3 rounded-lg text-sm font-medium ${
+            paymentStatus.type === 'success' 
+              ? 'bg-green-50 text-green-700 border border-green-200' 
+              : 'bg-red-50 text-red-700 border border-red-200'
+          }`}>
+            {paymentStatus.message}
+          </div>
+        )}
+
         <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={handleInitiatePayment}
         >
-            {({ values, errors, touched }) => (
+            {({ values, isSubmitting }) => (
                 <Form className='mt-4 space-y-4'>
                     <div>
                         <TextInput 
                             name='phone_number' 
                             placeholder='e.g., 0712345678' 
                         />
-                        {errors.phone_number && touched.phone_number && (
-                            <div className="text-red-500 text-sm mt-1">{errors.phone_number}</div>
-                        )}
                     </div>
 
-                    {/* Payment Method Radio Buttons */}
                     <div>
                         <label className='block text-gray-700 font-medium mb-1'>Select Payment Method:</label>
                         <div className='flex justify-between gap-4 py-2'>
@@ -66,13 +138,13 @@ export default function ActivationPayment({handleNextFunc}) {
                         <ErrorMessage name="payment_method" component="div" className="text-red-500 text-sm" />
                     </div>
 
-                    {/* Action Buttons */}
                     <div className='flex flex-col gap-3 pt-2'>
                         <button 
                             type='submit' 
-                            className='w-full bg-green-600 hover:bg-green-700 text-white font-bold p-3 rounded-lg transition-colors'
+                            disabled={isSubmitting}
+                            className='w-full bg-green-600 hover:bg-green-700 text-white font-bold p-3 rounded-lg transition-colors disabled:opacity-50'
                         >
-                            Initiate Payment
+                            {isSubmitting ? 'Initiating request...' : 'Initiate Payment'}
                         </button>
 
                         <button 
@@ -91,8 +163,8 @@ export default function ActivationPayment({handleNextFunc}) {
                             <ol className='list-decimal list-inside text-sm text-gray-700 space-y-1.5'>
                                 <li>Go to your M-PESA menu.</li>
                                 <li>Select <span className='font-semibold'>Lipa na M-PESA</span>, then <span className='font-semibold'>Paybill</span>.</li>
-                                <li>Enter Business No: <span className='font-bold text-green-600'>XXXXXX</span>.</li>
-                                <li>Enter Account No: <span className='font-bold text-green-600'>ACTIVATE</span> (or your phone number).</li>
+                                <li>Enter Business No: <span className='font-bold text-green-600'>{billingInfo?.paybill || 'XXXXXX'}</span>.</li>
+                                <li>Enter Account No: <span className='font-bold text-green-600'>{billingInfo?.accountNumber || 'ACTIVATE'}</span>.</li>
                                 <li>Enter Amount: <span className='font-semibold'>KES 35</span>.</li>
                                 <li>Enter your M-PESA PIN and press Send.</li>
                                 <li>Click the <span className='font-semibold'>Verify Payment</span> button above.</li>
@@ -108,9 +180,9 @@ export default function ActivationPayment({handleNextFunc}) {
                                 <li>Dial <span className='font-semibold'>*334#</span> on your Airtel line.</li>
                                 <li>Select <span className='font-semibold'>Airtel Money</span>.</li>
                                 <li>Choose <span className='font-semibold'>Lipa na Airtel Money</span>, then <span className='font-semibold'>Paybill</span>.</li>
-                                <li>Enter Business Name/No: <span className='font-bold text-red-600'>YYYYYY</span>.</li>
+                                <li>Enter Business Name/No: <span className='font-bold text-red-600'>{billingInfo?.paybill || 'YYYYYY'}</span>.</li>
                                 <li>Enter Amount: <span className='font-semibold'>KES 35</span>.</li>
-                                <li>Enter Account Name/No: <span className='font-bold text-red-600'>ACTIVATE</span>.</li>
+                                <li>Enter Account Name/No: <span className='font-bold text-red-600'>{billingInfo?.accountNumber || 'ACTIVATE'}</span>.</li>
                                 <li>Enter your Airtel Money PIN and confirm.</li>
                                 <li>Click the <span className='font-semibold'>Verify Payment</span> button above.</li>
                             </ol>
