@@ -13,12 +13,12 @@ export default function HeroSection() {
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <button className="rounded-xl border border-brand bg-white px-5 py-3 text-sm font-semibold text-brand-dark shadow-sm transition hover:-translate-y-0.5 hover:bg-brand/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30">
+            <a href='https://play.google.com/store/apps/details?id=ke.workazi.dimogare&pcampaignid=web_share' className="rounded-xl border border-brand bg-white px-5 py-3 text-sm font-semibold text-brand-dark shadow-sm transition hover:-translate-y-0.5 hover:bg-brand/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30">
               Download the app
-            </button>
-            <button className="rounded-xl border border-slate-900 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/60 hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20">
+            </a>
+            <a href='register' className="rounded-xl border border-slate-900 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/60 hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20">
               Register online
-            </button>
+            </a>
           </div>
         </div>
 

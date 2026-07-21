@@ -13,13 +13,14 @@ export default function CTASection() {
 
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <a
-              href="#"
+              target='_blank'
+              href="https://play.google.com/store/apps/details?id=ke.workazi.dimogare&pcampaignid=web_share"
               className="inline-flex items-center justify-center rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-green-700"
             >
               Download the app
             </a>
             <a
-              href="#"
+              href="register"
               className="inline-flex items-center justify-center rounded-xl border border-green-300 bg-white/80 px-5 py-2.5 text-sm font-semibold text-green-800 backdrop-blur-sm transition hover:-translate-y-0.5 hover:bg-white"
             >
               Register online

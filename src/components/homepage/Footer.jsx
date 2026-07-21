@@ -1,4 +1,5 @@
 import { FaEnvelope, FaFacebookF, FaHeadset, FaInstagram, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6'
+import { FaTiktok } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -26,21 +27,25 @@ export default function Footer() {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-900">Social Pages</h3>
             <div className="flex flex-col gap-2 text-sm text-slate-600">
-              <a href="#" className="inline-flex items-center gap-3 hover:text-green-600">
+              <a href="https://www.facebook.com/profile.php?id=61569632293338&mibextid=ZbWKwL" target='_blank' className="inline-flex items-center gap-3 hover:text-green-600">
                 <FaFacebookF />
                 <span>Facebook</span>
               </a>
-              <a href="#" className="inline-flex items-center gap-3 hover:text-green-600">
+              <a href="https://www.instagram.com/workazi254/" target='_blank' className="inline-flex items-center gap-3 hover:text-green-600">
                 <FaInstagram />
                 <span>Instagram</span>
               </a>
-              <a href="#" className="inline-flex items-center gap-3 hover:text-green-600">
+              <a href="https://x.com/Workazi254?t=fjMCB2NeMjwy2m3HDB4koA&s=09" target='_blank' className="inline-flex items-center gap-3 hover:text-green-600">
+                <FaTiktok />
+                <span>Tiktok</span>
+              </a>
+              <a href="https://www.linkedin.com/company/workazi-kenya/posts/?feedView=all" target='_blank' className="inline-flex items-center gap-3 hover:text-green-600">
                 <FaLinkedinIn />
                 <span>LinkedIn</span>
               </a>
-              <a href="#" className="inline-flex items-center gap-3 hover:text-green-600">
+              <a href="https://x.com/Workazi254?t=fjMCB2NeMjwy2m3HDB4koA&s=09" target='_blank' className="inline-flex items-center gap-3 hover:text-green-600">
                 <FaXTwitter />
-                <span>X / Twitter</span>
+                <span>X </span>
               </a>
             </div>
           </div>
