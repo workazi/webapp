@@ -7,6 +7,7 @@ import {
 import { Suspense, lazy } from "react"
 import Registation from "./pages/Registation"
 import WorkaziLegal from "./pages/WorkaziLegal"
+import { AuthProvider } from "./context/AuthContext"
 
 const HomePage = lazy(() => import("./pages/HomePage"))
 const Contact = lazy(()=>import( "./pages/Contact") )
@@ -27,7 +28,9 @@ const router = createBrowserRouter(
 function App() {
   return (
     <div className="font-poppins">
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </div>
   )
 }

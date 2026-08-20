@@ -6,6 +6,7 @@ export const axiosInstance = axios.create(
     {
         baseURL: baseUrl,
         timeout: 15000,
+        withCredentials: true,
     }
 )
 

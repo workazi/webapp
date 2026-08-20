@@ -3,6 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import TextInput from '../../inputs/TextInput'
 import { oneOffPayment, verifyPayment } from '../../../api/auth'
+import { useAuth } from '../../../context/AuthContext'
 
 const validationSchema = Yup.object().shape({
   phone_number: Yup.string()
@@ -25,15 +26,11 @@ const getSavedBillingInfo = () => {
   return null;
 }
 
-// simple obfuscation to match existing billing session convention, not real encryption
-const saveEncryptedSession = (key, data) => {
-  sessionStorage.setItem(key, btoa(JSON.stringify(data)));
-}
-
 export default function ActivationPayment({ handleNextFunc }) {
   const [paymentStatus, setPaymentStatus] = useState({ type: '', message: '' });
   const billingInfo = getSavedBillingInfo();
   const pollTimerRef = useRef(null);
+  const { login } = useAuth();
 
   const amount = billingInfo.amount
 
@@ -48,7 +45,7 @@ export default function ActivationPayment({ handleNextFunc }) {
 
   const handlePaymentSuccess = (paymentRecord) => {
     stopPolling();
-    saveEncryptedSession('_wz_lg_session', paymentRecord.user);
+    login(paymentRecord.user);
     sessionStorage.removeItem('_wz_b_session');
     setPaymentStatus({ type: 'success', message: 'Payment confirmed! Redirecting...' });
     handleNextFunc();
