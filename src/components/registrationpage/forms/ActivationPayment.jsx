@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import TextInput from '../../inputs/TextInput'
-import { oneOffPayment } from '../../../api/auth'
+import { oneOffPayment, verifyPayment } from '../../../api/auth'
 
 const validationSchema = Yup.object().shape({
   phone_number: Yup.string()
@@ -10,6 +10,8 @@ const validationSchema = Yup.object().shape({
     .matches(/^(?:254|\+254|0)?(7|1)\d{8}$/, 'Enter a valid Kenyan phone number'),
   payment_method: Yup.string().required('Please select a payment method'),
 })
+
+const POLL_INTERVAL_MS = 10000
 
 const getSavedBillingInfo = () => {
   try {
@@ -23,9 +25,56 @@ const getSavedBillingInfo = () => {
   return null;
 }
 
+// simple obfuscation to match existing billing session convention, not real encryption
+const saveEncryptedSession = (key, data) => {
+  sessionStorage.setItem(key, btoa(JSON.stringify(data)));
+}
+
 export default function ActivationPayment({ handleNextFunc }) {
   const [paymentStatus, setPaymentStatus] = useState({ type: '', message: '' });
   const billingInfo = getSavedBillingInfo();
+  const pollTimerRef = useRef(null);
+
+  const amount = billingInfo.amount
+
+  useEffect(() => {
+    return () => clearTimeout(pollTimerRef.current);
+  }, []);
+
+  const stopPolling = () => {
+    clearTimeout(pollTimerRef.current);
+    pollTimerRef.current = null;
+  }
+
+  const handlePaymentSuccess = (paymentRecord) => {
+    stopPolling();
+    saveEncryptedSession('_wz_lg_session', paymentRecord.user);
+    sessionStorage.removeItem('_wz_b_session');
+    setPaymentStatus({ type: 'success', message: 'Payment confirmed! Redirecting...' });
+    handleNextFunc();
+  }
+
+  const pollPaymentStatus = (transactionId) => {
+    pollTimerRef.current = setTimeout(async () => {
+      const response = await verifyPayment(transactionId);
+
+      if (response.success && response.data?.status === 'SUCCESS') {
+        handlePaymentSuccess(response.data);
+        return;
+      }
+
+      if (response.success && response.data?.status === 'PENDING') {
+        setPaymentStatus({ type: 'pending', message: 'Payment still pending, checking again shortly...' });
+        pollPaymentStatus(transactionId);
+        return;
+      }
+
+      setPaymentStatus({
+        type: 'error',
+        message: response.data?.detail || 'Could not confirm payment status. Please try verifying manually.'
+      });
+    }, POLL_INTERVAL_MS);
+  }
 
   const initialValues = {
     phone_number: '',
@@ -49,7 +98,7 @@ export default function ActivationPayment({ handleNextFunc }) {
       user_id: billingInfo.userId,
       phone_number: values.phone_number,
       payment_method: values.payment_method,
-      amount: 35 // Base activation fee
+      amount: amount
     };
 
     const response = await oneOffPayment(payload);
@@ -66,6 +115,10 @@ export default function ActivationPayment({ handleNextFunc }) {
         type: 'success', 
         message: `${response.data?.detail || 'Payment initiated successfully!'}. Check your phone for the push prompt.` 
       });
+
+      if (transactionId) {
+        pollPaymentStatus(transactionId);
+      }
     } else {
       const serverDetail = response.data?.detail || '';
       let errorDisplay = 'Could not initiate connection. Please try again.';
@@ -83,25 +136,46 @@ export default function ActivationPayment({ handleNextFunc }) {
     setSubmitting(false);
   }
 
-  const handleVerifyPayment = (values) => {
-    console.log('Checking payment status for:', values.phone_number)
+  const handleVerifyPayment = async () => {
+    const currentBillingInfo = getSavedBillingInfo();
+    const transactionId = currentBillingInfo?.transactionId;
 
-    const completeBillingContext = getSavedBillingInfo();
-    
-    handleNextFunc(completeBillingContext);
+    if (!transactionId) {
+      setPaymentStatus({ type: 'error', message: 'No payment found to verify. Please initiate payment first.' });
+      return;
+    }
+
+    stopPolling();
+    setPaymentStatus({ type: 'pending', message: 'Checking payment status...' });
+
+    const response = await verifyPayment(transactionId);
+
+    if (response.success && response.data?.status === 'SUCCESS') {
+      handlePaymentSuccess(response.data);
+    } else if (response.success && response.data?.status === 'PENDING') {
+      setPaymentStatus({ type: 'pending', message: 'Payment still pending, checking again shortly...' });
+      pollPaymentStatus(transactionId);
+    } else {
+      setPaymentStatus({
+        type: 'error',
+        message: response.data?.detail || 'Could not confirm payment status. Please try again.'
+      });
+    }
   }
 
   return (
     <div className='p-8'> 
         <div>
             <h1 className='font-bold text-3xl py-2 text-gray-800'>Initiate payment</h1>
-            <p className='text-gray-500 py-1'>One off fee of KES 35 for account activation</p>
+            <p className='text-gray-500 py-1'>One off fee of KES {amount} for account activation</p>
         </div>
 
         {paymentStatus.message && (
           <div className={`my-4 p-3 rounded-lg text-sm font-medium ${
             paymentStatus.type === 'success' 
               ? 'bg-green-50 text-green-700 border border-green-200' 
+              : paymentStatus.type === 'pending'
+              ? 'bg-yellow-50 text-yellow-700 border border-yellow-200'
               : 'bg-red-50 text-red-700 border border-red-200'
           }`}>
             {paymentStatus.message}
@@ -149,7 +223,7 @@ export default function ActivationPayment({ handleNextFunc }) {
 
                         <button 
                             type='button'
-                            onClick={() => handleVerifyPayment(values)}
+                            onClick={handleVerifyPayment}
                             className='w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold p-3 rounded-lg transition-colors'
                         >
                             I have paid, verify payment
@@ -165,7 +239,7 @@ export default function ActivationPayment({ handleNextFunc }) {
                                 <li>Select <span className='font-semibold'>Lipa na M-PESA</span>, then <span className='font-semibold'>Paybill</span>.</li>
                                 <li>Enter Business No: <span className='font-bold text-green-600'>{billingInfo?.paybill || 'XXXXXX'}</span>.</li>
                                 <li>Enter Account No: <span className='font-bold text-green-600'>{billingInfo?.accountNumber || 'ACTIVATE'}</span>.</li>
-                                <li>Enter Amount: <span className='font-semibold'>KES 35</span>.</li>
+                                <li>Enter Amount: <span className='font-semibold'>KES {amount}</span>.</li>
                                 <li>Enter your M-PESA PIN and press Send.</li>
                                 <li>Click the <span className='font-semibold'>Verify Payment</span> button above.</li>
                             </ol>
@@ -181,7 +255,7 @@ export default function ActivationPayment({ handleNextFunc }) {
                                 <li>Select <span className='font-semibold'>Airtel Money</span>.</li>
                                 <li>Choose <span className='font-semibold'>Lipa na Airtel Money</span>, then <span className='font-semibold'>Paybill</span>.</li>
                                 <li>Enter Business Name/No: <span className='font-bold text-red-600'>{billingInfo?.paybill || 'YYYYYY'}</span>.</li>
-                                <li>Enter Amount: <span className='font-semibold'>KES 35</span>.</li>
+                                <li>Enter Amount: <span className='font-semibold'>KES {amount}</span>.</li>
                                 <li>Enter Account Name/No: <span className='font-bold text-red-600'>{billingInfo?.accountNumber || 'ACTIVATE'}</span>.</li>
                                 <li>Enter your Airtel Money PIN and confirm.</li>
                                 <li>Click the <span className='font-semibold'>Verify Payment</span> button above.</li>

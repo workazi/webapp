@@ -8,11 +8,9 @@ import Footer from "../components/homepage/Footer";
 
 export default function HomePage() {
   return (
-    <div>
-      <div className="bg-linear-to-r from-green-50 via-lime-50 to-white min-h-[75vh] flex flex-col">
-        <NavigationBar />
-        <HeroSection />
-      </div>
+    <div className="bg-linear-to-r from-green-50 via-lime-50 to-white min-h-[75vh] flex flex-col">
+      <NavigationBar />
+      <HeroSection />
       <TrustSection />
       <ServicesSection />
       <TestimonialSection />

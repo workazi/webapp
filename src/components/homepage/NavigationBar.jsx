@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState } from "react"
 
 export default function NavigationBar() {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="px-4 h-16 flex items-center justify-between">
+    <div className="sticky top-0 z-50 px-4 h-16 flex items-center justify-between bg-white shadow-sm">
 
       {/* Logo */}
       <h1 className="font-bold text-3xl tracking-wider">
@@ -21,7 +21,7 @@ export default function NavigationBar() {
 
         <a
           href="/register"
-          className="border-2 border-green-500 text-white bg-green-500 px-2 py-1 rounded hover:bg-green-500/80 hover:text-white transition"
+          className="border-2 border-green-500 text-white bg-green-500 px-2 py-1 rounded hover:bg-green-500/80 transition"
         >
           Get started
         </a>

@@ -37,7 +37,8 @@ export default function PersonalInfo({ handleNextFunc }) {
       const billingData = {
         userId: response.data.user_id,
         paybill: response.data.paybill,
-        accountNumber: response.data.paybill_account_number
+        accountNumber: response.data.paybill_account_number,
+        amount: response.data.amount,
       };
 
 
