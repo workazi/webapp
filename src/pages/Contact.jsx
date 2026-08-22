@@ -1,4 +1,3 @@
-import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as yup from 'yup'
 import NavigationBar from '../components/homepage/NavigationBar'
@@ -159,7 +158,7 @@ export default function Contact() {
                       <label className="w-full flex items-center justify-between border-2 border-dashed border-slate-200 hover:border-green-500 bg-slate-50/50 hover:bg-white px-4 py-3 rounded-xl cursor-pointer transition-all">
                         <div className="flex items-center gap-2.5 text-slate-500 overflow-hidden">
                           <IoIosCloudUpload size={20} className="text-slate-400 shrink-0" />
-                          <span className="text-sm truncate max-w-[240px] sm:max-w-xs">
+                          <span className="text-sm truncate max-w-60 sm:max-w-xs">
                             {values.screenshot ? values.screenshot.name : 'Attach visual proof of issue'}
                           </span>
                         </div>

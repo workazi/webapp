@@ -5,13 +5,13 @@ import {
   createRoutesFromElements
  } from "react-router-dom"
 import { Suspense, lazy } from "react"
-import Registation from "./pages/Registation"
-import WorkaziLegal from "./pages/WorkaziLegal"
 import { AuthProvider } from "./context/AuthContext"
 
 const HomePage = lazy(() => import("./pages/HomePage"))
 const Contact = lazy(()=>import( "./pages/Contact") )
 const About = lazy(()=>import("./pages/About"))
+const Registation = lazy(()=>import('./pages/Registation'))
+const WorkaziLegal = lazy(()=> import('./pages/WorkaziLegal'))
 
 const router = createBrowserRouter(
   createRoutesFromElements(

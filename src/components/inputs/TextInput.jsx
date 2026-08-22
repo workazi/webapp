@@ -25,7 +25,6 @@ export default function TextInput({
         type={type}
         placeholder={placeholder}
         {...props}
-        // Utilizing a render function for className lets us style dynamically based on validation state
         children={({ field, meta }) => {
           const hasError = meta.touched && meta.error;
           return (
@@ -43,8 +42,6 @@ export default function TextInput({
           );
         }}
       />
-
-      {/* Renders the error message automatically if the field is touched and has an error */}
       <ErrorMessage 
         name={name} 
         component="span" 

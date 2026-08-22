@@ -5,11 +5,11 @@ export default function HeroSection() {
         <div className="space-y-6 lg:flex-1 w-full">
 
           <h1 className="text-4xl font-extrabold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
-            Kenya&apos;s Trusted Construction Marketplace
+            Kenya&apos;s Trusted Marketplace
           </h1>
 
           <p className="max-w-2xl text-base leading-relaxed text-slate-700 sm:text-lg">
-            Verified construction professionals, job opportunities, property listings, hardware suppliers, and equipment rentals-all in one platform.
+            Verified construction professionals, job opportunities, property listings, hardware suppliers and equipment rentals-all in one platform.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">

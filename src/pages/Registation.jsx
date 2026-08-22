@@ -99,9 +99,7 @@ export default function Registration() {
       </div>
 
       <div className='flex-1 flex items-start justify-center p-6 mt-6 md:mt-12'>
-        <div className='bg-white p-8 w-full max-w-2xl shadow-xl rounded-2xl border border-gray-100 flex flex-col justify-between min-h-[450px]'>
-          
-        
+        <div className='bg-white p-8 w-full max-w-2xl shadow-xl rounded-2xl border border-gray-100 flex flex-col justify-between min-h-112.5'>        
           <div className=' sm:h-140 overflow-auto'>
             <ActiveComponent handleNextFunc={handleNext} handleBackFunc={handleBack} />
           </div>
