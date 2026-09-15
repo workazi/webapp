@@ -20,6 +20,7 @@ const router = createBrowserRouter(
       <Route path="/contact" element={<Contact />}/>
       <Route path="/about" element={<About />} />
       <Route path="/register" element={<Registation />} />
+      <Route path="/privacy-policy" element={<WorkaziLegal />} />
       <Route path="/privacy-policy-2" element={<WorkaziLegal />} />
     </Route>
   )

@@ -5,8 +5,6 @@ import Footer from '../components/homepage/Footer'
 import { FaEnvelope, FaHeadset, FaClock } from 'react-icons/fa6'
 import { IoIosCloudUpload } from 'react-icons/io'
 import TextInput from '../components/inputs/TextInput' 
-
-// Import your network utility function
 import { supportRequest } from '../api/support'
 
 export default function Contact() {
@@ -21,12 +19,10 @@ export default function Contact() {
   })
 
   const handleSubmit = async (values, { setSubmitting, setStatus, resetForm }) => {
-    // Clear any existing alert status strings before running a request
     setStatus(null);
 
     let payload = values;
 
-    // If a file upload is included, wrap everything into a FormData instance
     if (values.screenshot) {
       const formData = new FormData();
       formData.append('name', values.name);
@@ -44,14 +40,11 @@ export default function Contact() {
       setStatus({ success: 'Your message has been sent successfully! We will get back to you soon.' });
       resetForm();
     } else {
-      // Pull specific backend error messages if available, else fall back to a standard string
       const errorMessage = response.data?.message || 'Failed to send your request. Please try again later.';
       setStatus({ error: errorMessage });
     }
 
     setSubmitting(false);
-
-    // Auto-clear success or error message after 10 seconds (10000ms)
     setTimeout(() => {
       setStatus(null);
     }, 10000);
@@ -60,8 +53,6 @@ export default function Contact() {
   return (
     <div className="bg-linear-to-br from-green-50 via-lime-50 to-white min-h-screen">
       <NavigationBar />
-
-      {/* Header section */}
       <header className="mx-auto max-w-7xl px-6 pb-8 pt-12 text-center md:px-10 lg:px-16 lg:pt-16">
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-green-600">Contact us</p>
         <h1 className="mt-4 text-4xl font-extrabold leading-tight text-slate-900 sm:text-5xl">
@@ -71,11 +62,7 @@ export default function Contact() {
           Send us a message or reach us directly through the emails below. We&apos;re here to help with jobs, listings and support.
         </p>
       </header>
-
-      {/* Main Core Body Segment */}
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 pb-16 md:px-10 lg:flex-row lg:items-start lg:gap-16 lg:px-16 lg:pb-20">
-        
-        {/* Left Hand side: Form Container */}
         <div className="space-y-6 lg:w-7/12">
           <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-xl sm:p-6 lg:p-8">
             <h2 className="mb-6 text-2xl font-bold text-slate-900 sm:text-3xl">Send us a message</h2>
@@ -94,8 +81,6 @@ export default function Contact() {
             >
               {({ values, setFieldValue, handleChange, handleBlur, isSubmitting, status }) => (
                 <Form className="flex flex-col gap-4 text-left">
-                  
-                  {/* Global Success / Error Alerts placeholders */}
                   {status?.success && (
                     <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-sm text-green-700 font-medium transition-all duration-300 animate-fade-in">
                       {status.success}
