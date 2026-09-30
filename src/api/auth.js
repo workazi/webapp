@@ -22,7 +22,7 @@ export async function accountCreation(data) {
 
 export async function oneOffPayment(data){
   try{
-    const res = await axiosInstance.post('/payment/initiate', data)
+    const res = await axiosInstance.post('/payment/initiate/', data)
 
     return {
       success: true,
