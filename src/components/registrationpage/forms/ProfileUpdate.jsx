@@ -57,8 +57,8 @@ export default function ProfileUpdate({ handleNextFunc }) {
     }
 
     const payload = {
-      phone_number: values.phone_number,
-      email: values.email,
+      phone_number: values.phone_number ?? user?.phone_number,
+      email: values.email ?? user?.email,
       location: Number(values.location),
       area: values.area,
       id_number: Number(values.id_number),
@@ -99,9 +99,9 @@ export default function ProfileUpdate({ handleNextFunc }) {
             onSubmit={handleSubmit}
             enableReinitialize
         >
-            {({ values, setFieldValue, isSubmitting }) => {
+            {({ values, setFieldValue, isSubmitting, errors }) => {
                 const availableSubCounties = locations.filter((loc) => loc.county === values.county)
-
+                console.log(errors)
                 return (
                     <Form className='grid gap-4 py-4'>
 
@@ -119,15 +119,17 @@ export default function ProfileUpdate({ handleNextFunc }) {
                                     <FileInput 
                                         label='Front side of ID' 
                                         name='id_front'
-                                        onChange={(event) => setFieldValue('id_front', event.currentTarget.files[0])}
+                                        onFileSelect={(file) => setFieldValue('id_front', file)}
                                     />
+                                    <ErrorMessage name="id_front" component="div" className="text-red-500 text-sm mt-1" />
                                 </div>
                                 <div>
                                     <FileInput 
                                         label='Back side of ID' 
                                         name='id_back'
-                                        onChange={(event) => setFieldValue('id_back', event.currentTarget.files[0])}
+                                        onFileSelect={(file) => setFieldValue('id_back', file)}
                                     />
+                                    <ErrorMessage name="id_back" component="div" className="text-red-500 text-sm mt-1" />
                                 </div>
                             </div>
                         </div>

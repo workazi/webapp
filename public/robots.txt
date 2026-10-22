@@ -1,0 +1,6 @@
+# Robots.txt for Workazi Construction Marketplace
+User-agent: *
+Allow: /
+
+# Sitemap URL for Search Engine Indexing
+Sitemap: https://workazi.com/sitemap.xml

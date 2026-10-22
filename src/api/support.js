@@ -2,7 +2,7 @@ import { axiosInstance } from "./axios";
 
 export async function supportRequest (data){
     try{
-        const res = await axiosInstance.post('/support/', data)
+        const res = await axiosInstance.post('/support/inquiries/', data)
         return {
             success: true,
             status: res.status,

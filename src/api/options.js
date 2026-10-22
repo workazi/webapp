@@ -41,13 +41,13 @@ export async function getPackages(userId, isEmployee){
 export async function getLocations(){
   try{
     const res = await axiosInstance.get('/app_options/location/')
-
     return {
       success: true,
       status: res.status,
       data: res.data,
     }
   } catch(err){
+    console.log(err)
     return {
       success: false,
       status: err.response?.status || 500,

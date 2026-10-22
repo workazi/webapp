@@ -58,56 +58,78 @@ export default function PackageSelection({ handleNextFunc }) {
 
       {/* Packages Grid */}
       {!isLoading && packages.length > 0 && (
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-6 items-start'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch'>
           {packages.map((pkg) => {
             const isSelected = selectedPackage === pkg.id;
+            const isFree = Number(pkg.price) === 0;
 
             return (
               <div
                 key={pkg.id}
                 onClick={() => setSelectedPackage(pkg.id)}
-                className={`flex flex-col h-full justify-between border p-6 rounded-xl shadow-sm transition-all duration-200 cursor-pointer hover:shadow-md ${
+                className={`relative flex flex-col justify-between rounded-xl border p-5 transition-all duration-200 cursor-pointer ${
                   isSelected
-                    ? 'border-green-500 ring-2 ring-green-500/20 bg-green-50/10'
-                    : 'border-gray-200 bg-white'
+                    ? 'border-green-600 bg-green-50/30 ring-2 ring-green-500/20 shadow-sm'
+                    : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
                 }`}
               >
-                <div className='grid gap-4'>
-                  {/* Package Name & Tag */}
-                  <div className='flex justify-between items-center'>
-                    <h3 className='text-xl font-bold text-gray-800'>{pkg.package_name}</h3>
-                    {isSelected && (
-                      <span className='bg-green-100 text-green-700 text-xs px-2.5 py-1 rounded-full font-semibold'>
-                        Selected
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Pricing */}
-                  <div className='flex items-baseline text-gray-900'>
-                    <span className='text-5xl font-extrabold tracking-tight'>
-                      {Number(pkg.price) === 0 ? 'Free' : `${pkg.price} KES`}
+                <div className='space-y-3'>
+                  {/* Package Name & Status Badge */}
+                  <div className='flex items-start justify-between gap-2'>
+                    <h3 className='text-base font-bold text-gray-900 leading-snug'>
+                      {pkg.package_name}
+                    </h3>
+                    <span
+                      className={`shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                        isSelected
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {isSelected ? 'Selected' : pkg.duration || 'Plan'}
                     </span>
-                    {Number(pkg.price) !== 0 && (
-                      <span className='text-gray-500 ml-1 text-xl font-semibold'>
-                        /{pkg.duration}
+                  </div>
+
+                  {/* Compact Pricing */}
+                  <div className='flex items-baseline gap-1 pt-1'>
+                    {isFree ? (
+                      <span className='text-2xl font-extrabold tracking-tight text-gray-900'>
+                        Free
                       </span>
+                    ) : (
+                      <>
+                        <span className='text-xs font-semibold uppercase text-gray-500'>
+                          KES
+                        </span>
+                        <span className='text-2xl font-extrabold tracking-tight text-gray-900'>
+                          {Number(pkg.price).toLocaleString()}
+                        </span>
+                        {pkg.duration && (
+                          <span className='text-xs font-medium text-gray-500'>
+                            / {pkg.duration}
+                          </span>
+                        )}
+                      </>
                     )}
                   </div>
 
-                  <p className='text-sm text-gray-500'>{pkg.package_description}</p>
+                  <div className='border-t border-gray-100 pt-3'>
+                    <p className='text-xs text-gray-600 leading-relaxed'>
+                      {pkg.package_description}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Action Button */}
                 <button
                   type='button'
-                  className={`w-full py-2.5 px-4 font-medium rounded-lg transition-colors duration-150 mt-6 ${
+                  className={`mt-5 w-full py-2 px-3 text-xs font-semibold rounded-lg transition-colors duration-150 ${
                     isSelected
                       ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-250'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {isSelected ? 'Selected' : 'Choose Plan'}
+                  {isSelected ? 'Selected Plan' : 'Choose Plan'}
                 </button>
               </div>
             );

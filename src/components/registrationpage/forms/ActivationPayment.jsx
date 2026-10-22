@@ -3,7 +3,12 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import TextInput from '../../inputs/TextInput'
 import { oneOffPayment, verifyPayment } from '../../../api/auth'
-import { useAuth } from '../../../context/AuthContext'
+import {
+  useAuth,
+  BILLING_SESSION_KEY,
+  encryptSessionData,
+  decryptSessionData,
+} from '../../../context/AuthContext'
 
 const validationSchema = Yup.object().shape({
   phone_number: Yup.string()
@@ -16,9 +21,9 @@ const POLL_INTERVAL_MS = 10000
 
 const getSavedBillingInfo = () => {
   try {
-    const savedSession = sessionStorage.getItem('_wz_b_session');
+    const savedSession = sessionStorage.getItem(BILLING_SESSION_KEY);
     if (savedSession) {
-      return JSON.parse(atob(savedSession));
+      return decryptSessionData(savedSession);
     }
   } catch (e) {
     console.error("Error reading session memory: ", e);
@@ -32,7 +37,7 @@ export default function ActivationPayment({ handleNextFunc }) {
   const pollTimerRef = useRef(null);
   const { login } = useAuth();
 
-  const amount = billingInfo.amount
+  const amount = billingInfo?.amount
 
   useEffect(() => {
     return () => clearTimeout(pollTimerRef.current);
@@ -45,8 +50,11 @@ export default function ActivationPayment({ handleNextFunc }) {
 
   const handlePaymentSuccess = (paymentRecord) => {
     stopPolling();
-    login(paymentRecord.user);
-    sessionStorage.removeItem('_wz_b_session');
+    login(paymentRecord, {
+      access: paymentRecord?.access,
+      refresh: paymentRecord?.refresh,
+    });
+    sessionStorage.removeItem(BILLING_SESSION_KEY);
     setPaymentStatus({ type: 'success', message: 'Payment confirmed! Redirecting...' });
     handleNextFunc();
   }
@@ -55,12 +63,12 @@ export default function ActivationPayment({ handleNextFunc }) {
     pollTimerRef.current = setTimeout(async () => {
       const response = await verifyPayment(transactionId);
 
-      if (response.success && response.data?.status === 'SUCCESS') {
+      if (response.success && response.data?.status === 'PAID') {
         handlePaymentSuccess(response.data);
         return;
       }
 
-      if (response.success && response.data?.status === 'PENDING') {
+      if (response.success && response.data?.status !== 'CANCELLED' && response.data?.status !== 'FAILED') {
         setPaymentStatus({ type: 'pending', message: 'Payment still pending, checking again shortly...' });
         pollPaymentStatus(transactionId);
         return;
@@ -68,14 +76,14 @@ export default function ActivationPayment({ handleNextFunc }) {
 
       setPaymentStatus({
         type: 'error',
-        message: response.data?.detail || 'Could not confirm payment status. Please try verifying manually.'
+        message: response.data?.failure_reason || response.data?.detail || 'Could not confirm payment status. Please try verifying manually.'
       });
     }, POLL_INTERVAL_MS);
   }
 
   const initialValues = {
     phone_number: '',
-    payment_method: 'safaricom',
+    payment_method: 'mpesa',
   }
 
   const handleInitiatePayment = async (values, { setSubmitting }) => {
@@ -105,7 +113,7 @@ export default function ActivationPayment({ handleNextFunc }) {
       
       if (billingInfo) {
         const updatedSession = { ...billingInfo, transactionId };
-        sessionStorage.setItem('_wz_b_session', btoa(JSON.stringify(updatedSession)));
+        sessionStorage.setItem(BILLING_SESSION_KEY, encryptSessionData(updatedSession));
       }
 
       setPaymentStatus({ 
@@ -146,16 +154,16 @@ export default function ActivationPayment({ handleNextFunc }) {
     setPaymentStatus({ type: 'pending', message: 'Checking payment status...' });
 
     const response = await verifyPayment(transactionId);
-
-    if (response.success && response.data?.status === 'SUCCESS') {
+    console.log(response)
+    if (response.success && response.data?.status === 'PAID') {
       handlePaymentSuccess(response.data);
-    } else if (response.success && response.data?.status === 'PENDING') {
+    } else if (response.success && response.data?.status !== 'CANCELLED' && response.data?.status !== 'FAILED') {
       setPaymentStatus({ type: 'pending', message: 'Payment still pending, checking again shortly...' });
       pollPaymentStatus(transactionId);
     } else {
       setPaymentStatus({
         type: 'error',
-        message: response.data?.detail || 'Could not confirm payment status. Please try again.'
+        message: response.data?.failure_reason || response.data?.detail || 'Could not confirm payment status. Please try again.'
       });
     }
   }
@@ -196,9 +204,9 @@ export default function ActivationPayment({ handleNextFunc }) {
                     <div>
                         <label className='block text-gray-700 font-medium mb-1'>Select Payment Method:</label>
                         <div className='flex justify-between gap-4 py-2'>
-                            <label className={`flex flex-1 gap-2 font-bold p-3 rounded-lg items-center cursor-pointer transition-colors ${values.payment_method === 'safaricom' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-500'}`}>
-                                <Field name='payment_method' value='safaricom' type='radio' className='w-4 h-4 accent-green-600' />
-                                Safaricom
+                            <label className={`flex flex-1 gap-2 font-bold p-3 rounded-lg items-center cursor-pointer transition-colors ${values.payment_method ==='mpesa' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-500'}`}>
+                                <Field name='payment_method' value='mpesa' type='radio' className='w-4 h-4 accent-green-600' />
+                                Mpesa
                             </label>
                             
                             <label className={`flex flex-1 gap-2 font-bold p-3 rounded-lg items-center cursor-pointer transition-colors ${values.payment_method === 'airtel' ? 'bg-red-50 text-red-600' : 'bg-gray-50 text-gray-500'}`}>
@@ -227,7 +235,7 @@ export default function ActivationPayment({ handleNextFunc }) {
                         </button>
                     </div>
 
-                    {values.payment_method === 'safaricom' && (
+                    {values.payment_method === 'mpesa' && (
                         <div className='mt-6 p-4 bg-gray-50 rounded-lg'>
                             <h3 className='font-bold text-gray-800 text-lg mb-2'>Manual M-PESA Instructions</h3>
                             <p className='text-sm text-gray-600 mb-3'>If you did not receive an automatic STK prompt on your phone, follow these steps:</p>

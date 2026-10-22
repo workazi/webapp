@@ -3,9 +3,11 @@ import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import TextInput from '../../inputs/TextInput'
 import { accountCreation } from '../../../api/auth'
+import { useAuth, BILLING_SESSION_KEY, encryptSessionData } from '../../../context/AuthContext'
 
 export default function PersonalInfo({ handleNextFunc }) {
   const [formStatus, setFormStatus] = useState({ type: '', message: '' });
+  const { login } = useAuth();
 
   const validationSchema = Yup.object({
     fullname: Yup.string()
@@ -42,8 +44,19 @@ export default function PersonalInfo({ handleNextFunc }) {
       };
 
 
-      const encryptedData = btoa(JSON.stringify(billingData));
-      sessionStorage.setItem('_wz_b_session', encryptedData);
+      const encryptedData = encryptSessionData(billingData);
+      sessionStorage.setItem(BILLING_SESSION_KEY, encryptedData);
+      if (response.data.user_id) {
+        login({
+          id: response.data.user_id,
+          fullname: values.fullname,
+          phone_number: values.phone_number,
+          email: values.email,
+          account_number: response.data.paybill_account_number,
+          paybill_account_number: response.data.paybill_account_number,
+          paybill: response.data.paybill,
+        });
+      }
 
       setFormStatus({ type: 'success', message: 'Account created successfully! Redirecting...' });
       

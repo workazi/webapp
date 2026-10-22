@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Formik, Form, Field } from 'formik'
 import { getJobPreferences, updateJobPreferences } from '../../../api/auth'
+import { useAuth } from '../../../context/AuthContext'
 
 const DEFAULT_PREFERENCES = {
   auto_apply: false,
@@ -35,7 +36,8 @@ const normalizePreferences = (value) => {
   return next
 }
 
-export default function Preferences() {
+export default function Preferences({ handleNextFunc }) {
+  const { login } = useAuth()
   const [initialValues, setInitialValues] = useState(DEFAULT_PREFERENCES)
   const [savedPreferences, setSavedPreferences] = useState(DEFAULT_PREFERENCES)
   const [isLoading, setIsLoading] = useState(true)
@@ -83,8 +85,10 @@ export default function Preferences() {
     })
 
     if (Object.keys(changedFields).length === 0) {
-      setStatus({ type: 'success', message: 'No changes to save.' })
+      login(sanitizedValues)
+      setStatus({ type: 'success', message: 'Preferences saved.' })
       setSubmitting(false)
+      handleNextFunc?.()
       return
     }
 
@@ -94,15 +98,20 @@ export default function Preferences() {
     if (response.success) {
       const updatedValues = normalizePreferences({
         ...savedPreferences,
+        ...sanitizedValues,
         ...response.data,
       })
 
       setSavedPreferences(updatedValues)
       setInitialValues(updatedValues)
+      login(updatedValues)
       setStatus({
         type: 'success',
         message: response.data?.detail || 'Job notification preferences saved successfully.',
       })
+      setSubmitting(false)
+      handleNextFunc?.()
+      return
     } else {
       const detail = response.data?.detail || response.data?.message || 'Could not save your job preferences.'
       setStatus({ type: 'error', message: detail })

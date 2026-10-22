@@ -61,14 +61,14 @@ export default function Footer() {
                 <FaHeadset />
                 <span>help@workazi.ke</span>
               </a>
-              <a href="#terms" className="hover:text-green-600">Terms and Conditions</a>
+              <a href="/privacy-policy" className="hover:text-green-600">Terms and Conditions</a>
             </div>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-slate-200 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>Copyright © Workazi</p>
-          <a href="#terms" className="hover:text-green-600">Terms and Conditions</a>
+          <a href="/privacy-policy" className="hover:text-green-600">Terms and Conditions</a>
         </div>
       </div>
     </footer>

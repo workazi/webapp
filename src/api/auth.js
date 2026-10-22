@@ -41,13 +41,13 @@ export async function oneOffPayment(data){
 
 export async function verifyPayment(transactionId){
   try{
-    const res = await axiosInstance.post(`/payment/status/${transactionId}/`)
-
-    return {
+    const res = await axiosInstance.get(`/payment/status/${transactionId}/`)
+   
+    return({
       success: true,
       status: res.status,
       data: res.data,
-    }
+    })
   } catch(err){
     return {
       success:false,
@@ -102,7 +102,7 @@ export async function updateSkill(userId, data){
 
 export async function updateAccount(userId, data){
   try{
-    const res = await axiosInstance.post(`/account/${userId}/`, data)
+    const res = await axiosInstance.patch(`/account/${userId}/`, data)
 
     return {
       success: true,

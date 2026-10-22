@@ -56,7 +56,8 @@ export default function EmployeeSkills({ handleNextFunc }) {
     }
 
     const formData = new FormData()
-    formData.append('skill_id', values.skill)
+    formData.append('skill', values.skill)
+    formData.append('user', user.id)
     formData.append('years_of_experience', values.years_of_experience)
     formData.append('registration_number', values.registration_number)
     formData.append('certificate_upload', values.certificate_upload)
@@ -67,6 +68,7 @@ export default function EmployeeSkills({ handleNextFunc }) {
       setSavedEntries((prev) => [...prev, values])
       resetForm()
     } else {
+      console.log(response)
       setSubmitError(response.data?.detail || 'Could not save skill. Please try again.')
     }
     setSubmitting(false)
@@ -170,8 +172,8 @@ export default function EmployeeSkills({ handleNextFunc }) {
                         <FileInput 
                             label='Upload Professional Certificate / License' 
                             name='certificate_upload'
-                            onChange={(event) => 
-                                setFieldValue('certificate_upload', event.currentTarget.files[0])
+                            onFileSelect={(file) => 
+                                setFieldValue('certificate_upload', file)
                             }
                         />
                         <ErrorMessage name='certificate_upload' component="div" className="text-red-500 text-sm mt-1" />

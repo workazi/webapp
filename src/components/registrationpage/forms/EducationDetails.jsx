@@ -104,12 +104,14 @@ export default function EducationDetails({ handleNextFunc }) {
             onSubmit={handleSubmit}
             enableReinitialize
         >
-            {({ setFieldValue, isSubmitting }) => (
+            {({ setFieldValue, isSubmitting, errors }) => (
                 <Form className='mt-4 space-y-4'>
+               
                     <div className='flex justify-between items-center bg-gray-50 p-2 rounded-lg'>
                         <span className='font-bold text-sm text-gray-600 uppercase tracking-wider'>
                             {savedEntries.length > 0 ? `Add Another Qualification #${savedEntries.length + 1}` : 'Education Qualification #1'}
                         </span>
+
                     </div>
 
                     {/* Level Dropdown Selector */}
@@ -157,8 +159,8 @@ export default function EducationDetails({ handleNextFunc }) {
                         <FileInput 
                             label='Upload Certificate / Transcripts' 
                             name='certificate_upload'
-                            onChange={(event) => 
-                                setFieldValue('certificate_upload', event.currentTarget.files[0])
+                            onFileSelect={(file) => 
+                                setFieldValue('certificate_upload', file)
                             }
                         />
                         <ErrorMessage name='certificate_upload' component="div" className="text-red-500 text-sm mt-1" />
